@@ -1,3 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (peterson)
-add_executable(peterson peterson.cpp)
+project(peterson)
+set(CMAKE_CXX_STANDARD 11)
+add_executable(${PROJECT_NAME} peterson.cpp)
+target_link_libraries(${PROJECT_NAME} pthread)
