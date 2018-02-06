@@ -11,7 +11,7 @@ class Lock {
 
     void acquire(int pid) {
         flags_[pid].store(true, std::memory_order::memory_order_release);
-        after_you_.store(pid, std::memory_order::memory_order_acq_rel);
+        after_you_.store(pid, std::memory_order::memory_order_seq_cst);
         for (; flags_[1 - pid].load(std::memory_order::memory_order_acquire) &&
                after_you_.load(std::memory_order::memory_order_acquire) == pid;)
             ;
