@@ -1,6 +1,6 @@
 #include <atomic>
 #include <future>
-#include <stdexcept>
+#include <iostream>
 
 class Lock {
  public:
@@ -11,7 +11,7 @@ class Lock {
 
   void acquire(int pid) {
     flags_[pid].store(true, std::memory_order::memory_order_release);
-    after_you_.store(pid, std::memory_order::memory_order_seq_cst);
+    after_you_.exchange(pid, std::memory_order::memory_order_acq_rel);
     for (; flags_[1 - pid].load(std::memory_order::memory_order_acquire) &&
            after_you_.load(std::memory_order::memory_order_acquire) == pid;)
       ;
@@ -43,7 +43,5 @@ int main() {
   auto f1 = std::async(std::launch::async, run, 1);
   f0.wait();
   f1.wait();
-  if (cnt != cnt_exp) {
-    throw std::logic_error{"Synchronization issue detected."};
-  }
+  std::cout << (cnt == cnt_exp ? "OK" : "NOK") << std::endl;
 }
